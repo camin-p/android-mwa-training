@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">My Application2</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title">title</string>
+    <string name="message">message</string>
+    <string name="language">ไทย</string>
 </resources>

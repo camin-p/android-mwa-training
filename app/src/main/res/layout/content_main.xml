@@ -15,7 +15,8 @@
         <android.support.v7.widget.AppCompatButton
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Button"
+            android:text="@string/language"
+            android:id="@+id/main_btn"
             android:layout_alignParentRight="true"
             android:background="@null"/>
     </RelativeLayout>
