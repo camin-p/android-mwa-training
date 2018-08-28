@@ -21,12 +21,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.maxile.lesson.myapplication2.adapter.MyAdapter;
+import com.maxile.lesson.myapplication2.adapter.OnLoadMoreListener;
 import com.maxile.lesson.myapplication2.adapter.model.RecyclerAdapterModel;
 import com.maxile.lesson.myapplication2.services.NewsService;
 import com.maxile.lesson.myapplication2.services.model.NewsItem;
 import com.maxile.lesson.myapplication2.services.model.NewsModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,10 +44,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private List<RecyclerAdapterModel> models;
     private MyAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
+    Retrofit retrofit;
+    NewsService service;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.mwa.co.th/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(NewsService.class);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,15 +72,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestPermission();
         models = new ArrayList<RecyclerAdapterModel>();
         for (int i =0;i<20;i++){
-            models.add(new RecyclerAdapterModel("title","detail"));
+            models.add(new RecyclerAdapterModel("title","detail",""));
         }
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        adapter = new MyAdapter(models);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(adapter);
 
+        recyclerView.setHasFixedSize(true);
+        linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new MyAdapter(models, recyclerView);
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                //add null , so the adapter will check view_type and show progress bar at bottom
+                models.add(null);
+                adapter.notifyItemInserted(models.size() - 1);
+                service.listNews(lastDate).enqueue(new Callback<NewsModel>() {
+                    @Override
+                    public void onResponse(Call<NewsModel> call, Response<NewsModel> response) {
+                        models.remove(models.size() - 1);
+                        adapter.notifyItemRemoved(models.size());
+                        for (NewsItem n :
+                                response.body().new_list) {
+                            models.add(new RecyclerAdapterModel(n.title,n.news,n.cover_picture));
+                            lastDate = n.pubDate +  " "+n.pubTime;
+                        }
+                        adapter.setLoaded();
+                        adapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<NewsModel> call, Throwable t) {
+                        int i =0;
+                    }
+                });
+
+            }
+        });
+        recyclerView.setAdapter(adapter);
     }
 
 
@@ -84,26 +125,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lang = "th";
         MainActivity.this.setLanguage(lang);
     }
-
+    private String lastDate = "";
     @Override
     protected void onResume() {
         super.onResume();
         int i = 0;
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.mwa.co.th/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        NewsService service = retrofit.create(NewsService.class);
 
-        service.listNews().enqueue(new Callback<NewsModel>() {
+        Date currentTime = Calendar.getInstance().getTime();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        service.listNews(df.format(currentTime)).enqueue(new Callback<NewsModel>() {
             @Override
             public void onResponse(Call<NewsModel> call, Response<NewsModel> response) {
                 models.clear();
                 for (NewsItem n :
                         response.body().new_list) {
-                    models.add(new RecyclerAdapterModel(n.title,n.news));
+                    models.add(new RecyclerAdapterModel(n.title,n.news,n.cover_picture));
+                    lastDate = n.pubDate +  " "+n.pubTime;
                 }
                 adapter.notifyDataSetChanged();
 
