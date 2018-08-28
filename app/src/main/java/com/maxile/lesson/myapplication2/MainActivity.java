@@ -22,13 +22,23 @@ import android.widget.TextView;
 
 import com.maxile.lesson.myapplication2.adapter.MyAdapter;
 import com.maxile.lesson.myapplication2.adapter.model.RecyclerAdapterModel;
+import com.maxile.lesson.myapplication2.services.NewsService;
+import com.maxile.lesson.myapplication2.services.model.NewsItem;
+import com.maxile.lesson.myapplication2.services.model.NewsModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private List<RecyclerAdapterModel> models;
+    private MyAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.main_btn).setOnClickListener(this);
         requestPermission();
-        List<RecyclerAdapterModel> models = new ArrayList<RecyclerAdapterModel>();
+        models = new ArrayList<RecyclerAdapterModel>();
         for (int i =0;i<20;i++){
             models.add(new RecyclerAdapterModel("title","detail"));
         }
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        MyAdapter adapter = new MyAdapter(models);
+        adapter = new MyAdapter(models);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -79,6 +89,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         int i = 0;
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.mwa.co.th/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NewsService service = retrofit.create(NewsService.class);
+
+        service.listNews().enqueue(new Callback<NewsModel>() {
+            @Override
+            public void onResponse(Call<NewsModel> call, Response<NewsModel> response) {
+                models.clear();
+                for (NewsItem n :
+                        response.body().new_list) {
+                    models.add(new RecyclerAdapterModel(n.title,n.news));
+                }
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onFailure(Call<NewsModel> call, Throwable t) {
+                int i =0;
+            }
+        });
     }
 
     @Override
