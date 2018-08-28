@@ -12,11 +12,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.maxile.lesson.myapplication2.adapter.MyAdapter;
+import com.maxile.lesson.myapplication2.adapter.model.RecyclerAdapterModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +48,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.main_btn).setOnClickListener(this);
         requestPermission();
+        List<RecyclerAdapterModel> models = new ArrayList<RecyclerAdapterModel>();
+        for (int i =0;i<20;i++){
+            models.add(new RecyclerAdapterModel("title","detail"));
+        }
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        MyAdapter adapter = new MyAdapter(models);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
+
     }
+
+
 
     @Override
     public void onClick(View view) {

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <View android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#A5A5A5"
+        android:layout_marginRight="14dp"/>
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <com.maxile.lesson.myapplication2.KanitTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Don’t Say a Word"
+            android:id="@+id/title_adapter"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+        <com.maxile.lesson.myapplication2.KanitTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:id="@+id/detail_adapter"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna wirl aliqua. Up exlaborum incididunt."/>
+    </android.support.v7.widget.LinearLayoutCompat>
+</android.support.v7.widget.LinearLayoutCompat>
