@@ -4,4 +4,6 @@
     <string name="title">title</string>
     <string name="message">message</string>
     <string name="language">ไทย</string>
+    <string name="contact">Contact Name</string>
+    <string name="contact_detail">Lorem ipsum</string>
 </resources>

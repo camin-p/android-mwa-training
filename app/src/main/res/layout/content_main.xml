@@ -36,7 +36,7 @@
             android:layout_marginLeft="14dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="ผู้ติดต่อ"
+            android:text="@string/contact"
             android:id="@+id/title_txt"
             android:textSize="24sp"
             app:layout_constraintLeft_toRightOf="@id/left_view"
@@ -47,7 +47,7 @@
             android:textSize="16sp"
             android:layout_height="wrap_content"
             android:id="@+id/detail_txt"
-            android:text="รอเลม ยิปซัม"
+            android:text="@string/contact_detail"
             app:layout_constraintTop_toBottomOf="@id/title_txt"
             app:layout_constraintLeft_toRightOf="@id/left_view"
             app:layout_constraintRight_toRightOf="parent"/>

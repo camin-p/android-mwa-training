@@ -4,4 +4,6 @@
     <string name="title">หัวเรื่อง</string>
     <string name="message">ข้อความ</string>
     <string name="language">Eng</string>
+    <string name="contact">ผู้ติดต่อ</string>
+    <string name="contact_detail">รอเลม ยิปซัม</string>
 </resources>
