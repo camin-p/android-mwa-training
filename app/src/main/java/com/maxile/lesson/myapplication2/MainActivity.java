@@ -1,7 +1,9 @@
 package com.maxile.lesson.myapplication2;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -59,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
     NewsService service;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
+        initLanguage();
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.mwa.co.th/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -88,16 +91,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.main_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
-                findViewById(R.id.line_chart).setVisibility(View.GONE);
-//                Locale current = getResources().getConfiguration().locale;
-//                String currentL = current.getLanguage();
-//                String lang;
-//                if (current.getLanguage() == "th")
-//                    lang = "en";
-//                else
-//                    lang = "th";
-//                MainActivity.this.setLanguage(lang);
+                //findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
+                //findViewById(R.id.line_chart).setVisibility(View.GONE);
+                Locale current = getResources().getConfiguration().locale;
+                String currentL = current.getLanguage();
+                String lang;
+                if (current.getLanguage() == "th")
+                    lang = "en";
+                else
+                    lang = "th";
+                MainActivity.this.setLanguage(lang,true);
             }
         });
         requestPermission();
@@ -248,8 +251,25 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         int i = 0;
     }
+    public void initLanguage(){
+        SharedPreferences preferences =
+                this.getSharedPreferences("com.example.maxile.myapplication",
+                        Context.MODE_PRIVATE);
+        String lang = preferences.getString("CURRENT_LANGUAGE","");
+        if (lang.equals("")){
+            Locale current = getResources().getConfiguration().locale;
+            lang = current.getLanguage();
+        }
+        setLanguage(lang,false);
+    }
+    public void setLanguage(String language, boolean isStartnewActivity) {
+        SharedPreferences preferences =
+                this.getSharedPreferences("com.example.maxile.myapplication",
+                        Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("CURRENT_LANGUAGE", language);
+        editor.commit();
 
-    public void setLanguage(String language) {
         Resources res = MainActivity.this.getResources();
 
         DisplayMetrics dm = res.getDisplayMetrics();
@@ -257,10 +277,13 @@ public class MainActivity extends AppCompatActivity {
         conf.setLocale(new Locale(language));
 
         res.updateConfiguration(conf, dm);
-        Intent refresh = new Intent(MainActivity.this, MainActivity.class);
-        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(refresh);
-        finish();
+        if (isStartnewActivity){
+            Intent refresh = new Intent(MainActivity.this, MainActivity.class);
+            refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(refresh);
+            finish();
+        }
+
     }
 
     public final String[] listPermission = new String[]{
