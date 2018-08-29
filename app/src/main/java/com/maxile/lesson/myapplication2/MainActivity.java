@@ -18,8 +18,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.maxile.lesson.myapplication2.adapter.MyAdapter;
 import com.maxile.lesson.myapplication2.adapter.OnLoadMoreListener;
 import com.maxile.lesson.myapplication2.adapter.model.RecyclerAdapterModel;
@@ -41,7 +49,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private List<RecyclerAdapterModel> models;
     private MyAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
@@ -67,8 +75,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setAction("Action", null).show();
             }
         });
-
-        findViewById(R.id.main_btn).setOnClickListener(this);
+        findViewById(R.id.contact_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.recycler_view).setVisibility(View.GONE);
+                findViewById(R.id.line_chart).setVisibility(View.VISIBLE);
+            }
+        });
+        findViewById(R.id.main_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
+                findViewById(R.id.line_chart).setVisibility(View.GONE);
+//                Locale current = getResources().getConfiguration().locale;
+//                String currentL = current.getLanguage();
+//                String lang;
+//                if (current.getLanguage() == "th")
+//                    lang = "en";
+//                else
+//                    lang = "th";
+//                MainActivity.this.setLanguage(lang);
+            }
+        });
         requestPermission();
         models = new ArrayList<RecyclerAdapterModel>();
         for (int i =0;i<20;i++){
@@ -110,21 +138,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         recyclerView.setAdapter(adapter);
+
+        LineChart lineChart = (LineChart)findViewById(R.id.line_chart);
+
     }
 
 
 
-    @Override
-    public void onClick(View view) {
-        Locale current = getResources().getConfiguration().locale;
-        String currentL = current.getLanguage();
-        String lang;
-        if (current.getLanguage() == "th")
-            lang = "en";
-        else
-            lang = "th";
-        MainActivity.this.setLanguage(lang);
-    }
+
     private String lastDate = "";
     @Override
     protected void onResume() {
@@ -135,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Date currentTime = Calendar.getInstance().getTime();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ////////
+        showProgress();
         service.listNews(df.format(currentTime)).enqueue(new Callback<NewsModel>() {
             @Override
             public void onResponse(Call<NewsModel> call, Response<NewsModel> response) {
@@ -145,14 +168,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     lastDate = n.pubDate +  " "+n.pubTime;
                 }
                 adapter.notifyDataSetChanged();
-
+                hideProgress();
+                //////
             }
 
             @Override
             public void onFailure(Call<NewsModel> call, Throwable t) {
                 int i =0;
+                hideProgress();
+                /////
             }
         });
+    }
+
+    public void showProgress(){
+        ProgressBar p = (ProgressBar)findViewById(R.id.progressBarCenter);
+        p.setVisibility(View.VISIBLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    public void hideProgress(){
+
+        ProgressBar p = (ProgressBar)findViewById(R.id.progressBarCenter);
+        p.setVisibility(View.GONE);
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override

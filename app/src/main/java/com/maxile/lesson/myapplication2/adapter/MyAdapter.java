@@ -116,6 +116,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
+
     @Override
     public int getItemViewType(int position) {
         return items.get(position) != null ? VIEW_ITEM : VIEW_PROG;

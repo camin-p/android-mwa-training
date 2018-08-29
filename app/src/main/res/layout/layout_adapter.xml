@@ -23,11 +23,13 @@
             android:layout_height="wrap_content"
             android:text="Don’t Say a Word"
             android:id="@+id/title_adapter"
+            android:maxLines="2"
             android:textSize="24sp"
             android:textStyle="bold"/>
         <com.maxile.lesson.myapplication2.KanitTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="3"
             android:textSize="14sp"
             android:id="@+id/detail_adapter"
             android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna wirl aliqua. Up exlaborum incididunt."/>
