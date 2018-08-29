@@ -1,5 +1,8 @@
 package com.maxile.lesson.myapplication2.adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.maxile.lesson.myapplication2.DetailActivity;
 import com.maxile.lesson.myapplication2.R;
 import com.maxile.lesson.myapplication2.adapter.model.RecyclerAdapterModel;
 import com.squareup.picasso.Picasso;
@@ -28,6 +32,23 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.detailTextView = (TextView)this.itemView.findViewById(R.id.detail_adapter);
             this.imageView = (ImageView)this.itemView.findViewById(R.id.adapter_image);
         }
+
+        public void bind(final RecyclerAdapterModel model,final Context c){
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Snackbar.make(view, model.title, Snackbar.LENGTH_LONG)
+                    //        .setAction("Action", null).show();
+                    Intent intent = new Intent(c, DetailActivity.class);
+                    intent.putExtra("title",model.title);
+                    intent.putExtra("cover_picture",model.cover_picture);
+                    intent.putExtra("news",model.detail);
+                    c.startActivity(intent);
+                }
+            });
+
+        }
+
     }
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar progressBar;
@@ -44,7 +65,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private int visibleThreshold = 5;
     private OnLoadMoreListener onLoadMoreListener;
-    public MyAdapter(List<RecyclerAdapterModel> items, RecyclerView recyclerView) {
+    private Context mContext;
+    public MyAdapter(List<RecyclerAdapterModel> items, RecyclerView recyclerView,
+                     Context context) {
+        mContext = context;
         this.items = items;
 
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
@@ -96,6 +120,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (sectionModel.cover_picture.equals("")){
                 sectionModel.cover_picture = "https://via.placeholder.com/100x100";
             }
+            myViewHolder.bind(sectionModel,mContext);
             Picasso.get()
                     .load(sectionModel.cover_picture)
                     .into(myViewHolder.imageView);
