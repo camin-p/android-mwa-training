@@ -2,6 +2,9 @@ package com.maxile.lesson.myapplication2;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +18,6 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         String title = this.getIntent().getStringExtra("title");
         String cover_picture = this.getIntent().getStringExtra("cover_picture");
@@ -26,5 +28,21 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.get()
                 .load(cover_picture)
                 .into(iv);
+        WebView webView = (WebView)findViewById(R.id.webview);
+        webView.loadDataWithBaseURL
+                ("file:///android_asset/",news,
+                        "text/html", "utf-8",
+                        null);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
